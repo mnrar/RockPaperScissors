@@ -2,68 +2,93 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Rock Paper Scissor</title>
+        <title>Rock Paper Scissors</title>
     </head>
     <body>
         <p>Enjoy !-!</p>
+        <div id = "container">
+            <p id="scores">Your Score: <span id="playerScore">0</span>
+            <br>Computer's Score: <span id="computerScore">0</span></p>
+            <button id="rock">Rock</button>
+            <button id="paper">Paper</button>
+            <button id="scissors">Scissors</button>
+        </div>
+        <p id="remarks">Pick one...</p>
 
 
         <script>
             let rps = ["Rock", "Paper", "Scissors"];
+            let playerScore = 0;
+            let computerScore = 0;
+            let gameComplete = 0;
 
             let computerPlay = function(){
                 return Math.floor(Math.random() * 3);
             }
 
-            let roundPlay = function(playerSelection, computerSelection){
-                if(playerSelection == computerSelection)return 0;
+            let roundPlay = function(playerSelection){
+                if(gameComplete == 1)return 0;
+                let computerSelection = computerPlay();
+                let result = 1;
+                if(playerSelection == computerSelection)result = 0;
                 else if((playerSelection == 0 && computerSelection == 2) || 
                         (playerSelection == 1 && computerSelection == 0) ||
                         (playerSelection == 2 && computerSelection == 1)){
-                            return 1;
+                            result = 1;
                         }
-                else return -1;        
+                else result = -1;  
+                
+                publishResult(result, playerSelection, computerSelection);
             }
 
-            let getInput = function(){
-                while(true){
-                    let inp = prompt("Choose Rock, paper or scissors", "Rock");
-                    for(let i =0; i<3; i++){
-                        if(inp.toLowerCase() == rps[i].toLowerCase())return i;
-                    }
-                    alert("Invalid choice!! check for spelling mistakes...");
-                }
-            }
+            let playerScoreDisplay = document.querySelector('#playerScore');
+            let computerScoreDisplay = document.querySelector('#computerScore');
+            let remarkDisplay = document.querySelector('#remarks');
 
-            let game = function(numOfRounds){
-                let playerScore = 0;
-                let computerScore = 0;
-                while(numOfRounds--){
-                    let playerSelection = getInput();
-                    let computerSelection = computerPlay();
-                    let result = roundPlay(playerSelection, computerSelection);
-                    if(result == 1){
-                        playerScore++;
-                        console.log("You Win!! "+rps[playerSelection]+" beats "+rps[computerSelection]);
-                    } else if(result == -1){
-                        computerScore++;
-                        console.log("You Lose!! "+rps[computerSelection]+" beats "+rps[playerSelection]);
+            let publishResult = function(result, playerSelection, computerSelection){
+                if(result > 0){
+                    playerScore += 1;
+                    playerScoreDisplay.textContent = playerScore;
+                    if(playerScore >= 5){
+                        remarkDisplay.textContent = "Congratulations!! You have won";
+                        alert("You Win!!");
+                        gameComplete = 1;
                     } else {
-                        numOfRounds++;
-                        console.log("Its a tie");
+                        remarkDisplay.textContent = "You Win!! "+rps[playerSelection]+" beats "+rps[computerSelection];
                     }
-                }
-                if(playerScore > computerScore){
-                    alert("Congratulations!! You have won");
-                    console.log("Congratulations!! You have won");
-                } else {
-                    alert("You lost to a bot.");
-                    console.log("You lost to a bot.");
-                }
-                console.log("Scores:\n\tPlayer:\t\t"+playerScore+"\n\tComputer:\t"+computerScore);
+                } else if(result < 0){
+                    computerScore += 1;
+                    computerScoreDisplay.textContent = computerScore;
+                    if(computerScore >= 5){
+                        remarkDisplay.textContent = "You Lost to a bot";
+                        alert("You Lose");
+                        gameComplete = 1;
+                    } else {
+                        remarkDisplay.textContent = "You Lose:\\ "+rps[computerSelection]+" beats "+rps[playerSelection];
+                    }    
+                } else remarkDisplay.textContent = "It was a tie, Go again...";
             }
-            
-            game(5);
+
+
+            const buttons = document.querySelectorAll('button');
+
+            buttons.forEach((button) => {
+                button.addEventListener('click', (e) => {
+                    switch(button.id){
+                        case "rock":
+                            roundPlay(0);
+                            break;
+                        case "paper":
+                            roundPlay(1);
+                            break;
+                        case "scissors":
+                            roundPlay(2);
+                            break;        
+                    }
+                });
+            });
+
+                
 
         </script>
     </body>
